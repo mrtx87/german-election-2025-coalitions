@@ -12,3 +12,21 @@
 body {
     background-color: #efefef;
 }
+
+.default-button {
+    cursor: pointer;
+    border-radius: 4px;
+    border: none;
+    height:fit-content;
+    padding: 8px;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+}
+
+.default-button:hover {
+    background-color: #E8E8E8FF;
+}
+
+.default-button:active {
+    background-color: #E8E8E8FF;
+    transform: translateY(2px);
+}

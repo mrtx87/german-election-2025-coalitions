@@ -3,7 +3,7 @@
         <div class="subheading">Umfragen zur Bundestagswahl 2025 der letzten 7Tage</div>
         <div class="survey-nav">
             <div class="survey-items">
-                <button class="default-button" v-on:click="updatePolls()">refresh</button>
+                <button class="default-button survey-nav-btn" v-on:click="updatePolls()">refresh</button>
                 <div class="survey-item" v-on:click="selectSurvey(survey.id)" v-for="survey in surveys"
                      v-bind:key="survey.id" :class="{'selected': survey.id === selectedSurveyId }"
                      :title=" toDate(survey.surveyPeriod.start) + ' - ' + toDate(survey.surveyPeriod.end) + ' | ' + survey.participants + ' Teilnehmer'">
@@ -29,7 +29,7 @@
                     <div style="align-self: flex-start">Summe:
                         {{ editingSurvey?.results?.reduce((sum, v) => sum + v.result, 0) }}%
                     </div>
-                    <button v-on:click="reset">zurücksetzen</button>
+                    <button v-on:click="reset" class="default-button">zurücksetzen</button>
                 </div>
             </div>
             <div class="coalition-results">
@@ -156,18 +156,17 @@ export default {
                 Query.Survey.Sort.allResults(Order.Desc),
             ]);
             this.sortSurveys(query.surveys);
-            query.surveys.forEach(survey => {
-                this.sortResultsBy(survey.results, 'result');
-            });
             this.appStore.setSurveys(query.surveys);
-            this.selectRandomSurvey(query.surveys.map(s => s.id));
+            if(!this.selectedSurveyId){
+                this.selectRandomSurvey(query.surveys.map(s => s.id));
+            }
         },
         reset() {
-            this.selectSurvey(this.selectedSurveyId);
+            this.selectSurvey(this.selectedSurveyId, true);
         },
         selectRandomSurvey(surveyIds) {
             const index = Math.floor(Math.random() * surveyIds.length);
-            this.selectSurvey(surveyIds[index]);
+            this.selectSurvey(surveyIds[index], true);
         },
         sortResultsBy(results, sortBy) {
             let sortByFunc = null;
@@ -193,9 +192,15 @@ export default {
         sortSurveys(surveys) {
             surveys.sort((s1, s2) => {
                 return s2.release.getTime() - s1.release.getTime()
-            })
+            });
+            surveys.forEach(survey => {
+                this.sortResultsBy(survey.results, 'result');
+            });
         },
-        selectSurvey(id) {
+        selectSurvey(id, force = false) {
+            if (id === this.selectedSurveyId && !force) {
+                return;
+            }
             this.appStore.setSelectedSurveyId(id);
             const selectedSurvey = this.appStore.selectedSurvey;
             const cloned = deepCloneObject(selectedSurvey);
@@ -360,7 +365,12 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    min-width: 70%;;
+    min-width: 70%;
+
+    .survey-nav-btn {
+      position: absolute;
+      top: -40px;
+    }
 
     .survey-items {
       position: relative;
@@ -388,8 +398,7 @@ export default {
         }
 
         &:not(.selected):hover {
-          background-color: grey;
-          color: white;
+          background-color: #d1d1ff;
         }
 
         .institute-name {
@@ -493,20 +502,5 @@ export default {
   }
 }
 
-.default-button {
-  position: absolute;
-  bottom: calc(100% + 20px);
-  right: 0;
-  outline: 0;
-  border: none;
-  padding: 5px;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #bbb9b7;
-
-  &:hover {
-    background-color: darkseagreen;
-  }
-}
 
 </style>
