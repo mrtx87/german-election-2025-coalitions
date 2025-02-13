@@ -29,6 +29,7 @@
                     <div style="align-self: flex-start">Summe:
                         {{ editingSurvey?.results?.reduce((sum, v) => sum + v.result, 0) }}%
                     </div>
+                    <button v-on:click="reset">zurücksetzen</button>
                 </div>
             </div>
             <div class="coalition-results">
@@ -160,6 +161,9 @@ export default {
             });
             this.appStore.setSurveys(query.surveys);
             this.selectRandomSurvey(query.surveys.map(s => s.id));
+        },
+        reset() {
+            this.selectSurvey(this.selectedSurveyId);
         },
         selectRandomSurvey(surveyIds) {
             const index = Math.floor(Math.random() * surveyIds.length);
