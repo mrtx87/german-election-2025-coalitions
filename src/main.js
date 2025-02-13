@@ -1,4 +1,10 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
+import {createPinia} from "pinia";
+import {AppService} from "@/services/app-service.ts";
+import './assets/css/main.css';
 
-createApp(App).mount('#app')
+const app = createApp(App);
+app.config.globalProperties.$appService = new AppService();
+app.use(createPinia());
+app.mount('#app');

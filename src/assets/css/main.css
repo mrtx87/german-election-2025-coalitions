@@ -1,0 +1,14 @@
+:root {
+    --spdColor: rgb(217, 77, 65);
+    --unionColor: rgb(97, 89, 82);
+    --afdColor: rgb(117, 192, 235);
+    --fdpColor: rgb(245, 210, 51);
+    --sonstigeColor: darkgrey;
+    --linkeColor: rgb(181, 107, 184);
+    --bswColor: rgb(191, 57, 100);
+    --grüneColor: rgb(132, 196, 98);
+}
+
+body {
+    background-color: #efefef;
+}
