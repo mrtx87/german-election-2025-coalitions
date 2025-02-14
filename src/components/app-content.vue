@@ -57,7 +57,7 @@
                 </button>
             </div>
         </div>
-
+        <timeline-diagram v-if="surveys.length"></timeline-diagram>
     </div>
 </template>
 
@@ -66,8 +66,9 @@ import {useAppStateStore} from "@/stores/app-state.ts";
 import {Polls, Query, Order, DataType} from 'german-election-polls';
 import moment from "moment/moment";
 import SelectPartyValue from "@/components/select-party-value.vue";
-import {deepCloneObject, HURDLE, sonstige} from "@/services/util.ts";
+import {deepCloneObject, HURDLE, sonstige, toDate} from "@/services/util.ts";
 import CoalitionDiagram from "@/components/coalition-diagram.vue";
+import TimelineDiagram from "@/components/timeline-diagram.vue";
 
 export class CoalitionMap {
     _map;
@@ -125,6 +126,7 @@ export class Coalition {
 export default {
     name: "App-Content",
     components: {
+        TimelineDiagram,
         CoalitionDiagram,
         SelectPartyValue
     },
@@ -141,23 +143,22 @@ export default {
     },
     methods: {
         toDate: function (date) {
-            return moment(date).format('DD.MM.YY');
+            return toDate(date);
         },
         async updatePolls() {
-            let from = new Date();
-            from = from.setDate(from.getDate() - 7);
             const polls = new Polls();
             await polls.update();
+            const date = moment().subtract(7, 'days').toDate();
             const query = polls.select([
                 Query.include([DataType.Surveys]),
-                Query.Survey.Release.isGreater(from),
+                Query.Survey.Release.isGreater(date),
                 Query.Survey.Parliament.Shortcut.is(['Bundestag']),
                 Query.Survey.Sort.byParticipants(Order.Asc),
                 Query.Survey.Sort.allResults(Order.Desc),
             ]);
             this.sortSurveys(query.surveys);
             this.appStore.setSurveys(query.surveys);
-            if(!this.selectedSurveyId){
+            if (!this.selectedSurveyId) {
                 this.selectRandomSurvey(query.surveys.map(s => s.id));
             }
         },
