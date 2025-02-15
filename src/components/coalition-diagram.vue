@@ -4,14 +4,15 @@
         <div class="party-diagram">
             <div class="half-indicator">| <span class="half-indicator-title">50%</span></div>
             <div class="party-value-line"
-                 v-for="party in coalitionData.partys" v-bind:key="party.id"
-                 :style="{width: party.result + '%', backgroundColor:'var(--' + party.party.shortcut.toLowerCase() + 'Color)'}"></div>
+                 v-for="partyResult in coalitionData.partys" v-bind:key="partyResult.id"
+                 :style="{width: partyResult.result + '%', backgroundColor:getColor(partyResult.party.shortcut)}"></div>
         </div>
     </div>
 </template>
 
 <script>
 import {useAppStateStore} from "@/stores/app-state.ts";
+import {getColor} from "@/services/util.ts";
 
 export default {
     name: "coalition-diagram",
@@ -25,7 +26,11 @@ export default {
             appStore: null,
         }
     },
-    methods: {},
+    methods: {
+        getColor(id) {
+            return getColor(id);
+        }
+    },
     computed: {
         titleString() {
             return this.coalitionData.partys.map(p => p.party.shortcut).join(', ') + ' - ' + this.coalitionData.sum.toFixed(2) + '%'
@@ -75,7 +80,6 @@ export default {
 
     .party-value-line {
       height: 8px;
-
     }
   }
 

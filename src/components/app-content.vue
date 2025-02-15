@@ -1,6 +1,6 @@
 <template>
     <div class="app-content">
-        <div class="subheading">Umfragen zur Bundestagswahl 2025 der letzten 7Tage</div>
+        <div class="subheading">Umfragen zur Bundestagswahl 2025 der letzten 14 Tage</div>
         <div class="survey-nav">
             <div class="survey-items">
                 <button class="default-button survey-nav-btn" v-on:click="updatePolls()">refresh</button>
@@ -148,7 +148,7 @@ export default {
         async updatePolls() {
             const polls = new Polls();
             await polls.update();
-            const date = moment().subtract(7, 'days').toDate();
+            const date = moment().subtract(14, 'days').toDate();
             const query = polls.select([
                 Query.include([DataType.Surveys]),
                 Query.Survey.Release.isGreater(date),

@@ -15,7 +15,7 @@
             <div class="range">
                 <input type="range" min="0" max="50" step="1"
                        :disabled="partyResult.locked || this.forcedDisabled"
-                       :class="[partyResult.party.shortcut.toLowerCase()]"
+                       :class="[partyResult.party.shortcut.toLowerCase().replace(/ /g, '')]"
                        :value="partyResult.result"
                        @input="updateResultState"/>
             </div>
@@ -182,12 +182,23 @@ input[type="range"]::-webkit-slider-thumb {
   border: 2px solid var(--linkeColor) !important;
 }
 
+.sonstige[type="range"]::-webkit-slider-thumb {
+    box-shadow: -407px 0 0 400px var(--sonstigeColor) !important;
+    border: 2px solid var(--sonstigeColor) !important;
+}
+
+.freiewähler[type="range"]::-webkit-slider-thumb {
+    box-shadow: -407px 0 0 400px var(--freiewählerColor) !important;
+    border: 2px solid var(--freiewählerColor) !important;
+}
+
+
 input[type="range"]::-moz-range-thumb {
   height: 20px;
   width: 20px;
   border-radius: 50%;
   border: 1px solid darkgrey;
-  box-shadow: -407px 0 0 400px darkgrey;
+  box-shadow: -407px 0 0 400px #e4a320;
 }
 
 .range {

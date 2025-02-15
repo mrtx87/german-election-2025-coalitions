@@ -35,10 +35,12 @@ const partyToColorMapping = {
     linke: 'rgb(181, 107, 184)',
     bsw: 'rgb(191, 57, 100)',
     grüne: 'rgb(132, 196, 98)',
+    sonstige: 'rgba(215,215,215,0.47)',
+    'freie wähler': '#e4a320',
 }
 
 export function getColor(partyId) {
- return partyToColorMapping[partyId.toLowerCase()];
+ return partyToColorMapping[partyId.toLowerCase()] || 'darkgrey';
 }
 
 export const sonstige = 'sonstige';
