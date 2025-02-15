@@ -1,7 +1,7 @@
 <template>
     <div class="timeline-diagram-wrapper">
         <div style="font-weight: bolder;">Zeitlicher Verlauf der Umfrageergebnisse</div>
-        <canvas v-on:mousemove="onMouseMove" ref="_canvas" style="border: 1px solid black;"></canvas>
+        <canvas v-on:mousemove="onMouseMove" ref="_canvas" style=" background-color: #f6f6f6; border-radius: 4px;"></canvas>
     </div>
 </template>
 
@@ -138,10 +138,13 @@ export class Drawer {
     mousePosition;
 
     drawMetaInfo() {
-        if(this.highlightGraphId) {
+        if (this.highlightGraphId) {
             const graph = this.partyGraphsMap.get(this.highlightGraphId);
-            const lastVector = graph.vectors[graph.vectors.length-1];
-            this.drawText(this.highlightGraphId, new Vector2D(this.canvas.width * 0.92, lastVector.y + 3), {color: getColor(this.highlightGraphId), size: this.canvas.width * 0.014 +'px'});
+            const lastVector = graph.vectors[graph.vectors.length - 1];
+            this.drawText(this.highlightGraphId, new Vector2D(this.canvas.width * 0.92, lastVector.y + 3), {
+                color: getColor(this.highlightGraphId),
+                size: this.canvas.width * 0.014 + 'px'
+            });
         }
     }
 
@@ -234,11 +237,11 @@ export class Drawer {
         const endPosition = new Vector2D(startPosition.x + stepDown, startPosition.y);
         for (let partyId of this.partyGraphsMap.keys()) {
             const color = getColor(partyId);
-            this.drawLine(startPosition, endPosition, {color: color, width: textSize/3});
+            this.drawLine(startPosition, endPosition, {color: color, width: textSize / 3});
             this.drawText(partyId, endPosition
-                .clone()
-                .addX(textSize)
-                .addY(textSize/2.5),
+                    .clone()
+                    .addX(textSize)
+                    .addY(textSize / 2.5),
                 {size: textSize + 'px', color: color});
             startPosition.y += stepDown;
             endPosition.y += stepDown;
@@ -247,7 +250,7 @@ export class Drawer {
 
     drawGraphs() {
         const graphs = [...this.partyGraphsMap.values()];
-        if(this.highlightGraphId) {
+        if (this.highlightGraphId) {
             graphs.sort((g1, g2) => {
                 if (g1.partyId === this.highlightGraphId) {
                     return 1;
@@ -278,7 +281,7 @@ export class Drawer {
                 this.drawLine(from, to, options)
             }
             this.drawDot(from, options);
-            if(options.highlight) {
+            if (options.highlight) {
                 this.drawText(from.result + '%', Vector2D.of(from).addY(this.canvas.width * -0.01), {size: this.canvas.width * 0.01 + 'px'})
             }
         }
@@ -306,7 +309,7 @@ export class Drawer {
         this.ctx.stroke();
     }
 
-    drawRect(upperLeftPosition, size, options = {color: 'black', rounded: 5 }) {
+    drawRect(upperLeftPosition, size, options = {color: 'black', rounded: 5}) {
         this.ctx.beginPath(); // Start a new path
         if (!options.rounded) {
             this.ctx.rect(upperLeftPosition.x, upperLeftPosition.y, size.x, size.y);
@@ -380,6 +383,7 @@ export default {
   flex-direction: column;
   width: 100%;
   gap: 3px;
+
 }
 
 

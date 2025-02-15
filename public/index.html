@@ -1,17 +1,52 @@
 <!DOCTYPE html>
-<html lang="">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+<html lang="en">
+<head>
+  <script>
+    (function(){
+      var redirect = sessionStorage.redirect;
+      delete sessionStorage.redirect;
+      if (redirect && redirect != location.href) {
+        history.replaceState(null, null, redirect);
+      }
+    })();
+  </script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="content-Type" content="text/html; utf-8"/>
+  <meta http-equiv="Pragma" content="cache"/>
+  <meta name="robots" content="INDEX,FOLLOW"/>
+  <meta http-equiv="content-Language" content="en"/>
+  <meta name="description"
+        content="Koalitionsrechner zur Bundestagswahl 2025"/>
+  <meta name="keywords" content="bundestag, wahl, cdu, spd, fdp, afd, grüne, linke, koalition"/>
+  <meta name="author" content="Section9"/>
+  <meta name="publisher" content="Section9"/>
+  <meta name="copyright" content="Section9"/>
+  <meta name="audience" content="all"/>
+  <meta name="page-type" content="Video"/>
+  <meta name="page-topic" content="Media"/>
+  <meta http-equiv="Reply-to" content="contact@curview.net"/>
+  <meta name="expires" content=""/>
+  <meta name="revisit-after" content="7 days"/>
+
+  <link rel="icon" href="<%= BASE_URL %>/favicon.ico">
+  <title><%= htmlWebpackPlugin.options.title %></title>
+  <style>
+    body {
+      margin: unset;
+    }
+  </style>
+</head>
+<body>
+<noscript>
+  <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+    Please enable it to continue.</strong>
+</noscript>
+<div id="app"></div>
+<!-- built files will be auto injected -->
+</body>
 </html>
