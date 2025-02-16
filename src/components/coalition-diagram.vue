@@ -42,12 +42,14 @@ export default {
 <style lang="scss" scoped>
 
 .coalition-wrapper {
-  width: 40%;
+  width: 30%;
   display: flex;
   flex-direction: column;
   min-height: 10px;
   position: relative;
   gap: 5px;
+  max-width: 250px;
+  justify-content: space-between;
 
   .coal-title {
     text-align: left;

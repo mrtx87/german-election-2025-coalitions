@@ -4,8 +4,10 @@
              :title="partyResult?.party.name + ': ' + partyResult?.result + '%' + (partyResult.result < 5 ?  (' -> ' + (partyResult.exception ?  text : 'Nicht im Bundestag')) : '')">
             <div class="hurdle-indicator">
                 <img src="@/assets/checked.svg" v-if="!isSonstige(partyResult) && partyResult.result >= 5">
-                <img src="@/assets/unchecked.svg" v-if="isSonstige(partyResult) || (partyResult.result < 5 && !partyResult.exception)">
-                <img src="@/assets/star.svg" v-if="!isSonstige(partyResult) && (partyResult.result < 5 && partyResult.exception)">
+                <img src="@/assets/unchecked.svg"
+                     v-if="isSonstige(partyResult) || (partyResult.result < 5 && !partyResult.exception)">
+                <img src="@/assets/star.svg"
+                     v-if="!isSonstige(partyResult) && (partyResult.result < 5 && partyResult.exception)">
             </div>
             <span class="party-meta-name">{{ partyResult?.party.shortcut }}:</span>
             <span class="party-meta-value">{{ partyResult?.result }}%</span>
@@ -183,13 +185,13 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .sonstige[type="range"]::-webkit-slider-thumb {
-    box-shadow: -407px 0 0 400px var(--sonstigeColor) !important;
-    border: 2px solid var(--sonstigeColor) !important;
+  box-shadow: -407px 0 0 400px var(--sonstigeColor) !important;
+  border: 2px solid var(--sonstigeColor) !important;
 }
 
 .freiewähler[type="range"]::-webkit-slider-thumb {
-    box-shadow: -407px 0 0 400px var(--freiewählerColor) !important;
-    border: 2px solid var(--freiewählerColor) !important;
+  box-shadow: -407px 0 0 400px var(--freiewählerColor) !important;
+  border: 2px solid var(--freiewählerColor) !important;
 }
 
 
@@ -211,7 +213,7 @@ input[type="range"]::-moz-range-thumb {
 
 .party-result-panel {
   display: flex;
-  gap: 25px;
+  justify-content: space-between !important;
   position: relative;
 
   .lock {

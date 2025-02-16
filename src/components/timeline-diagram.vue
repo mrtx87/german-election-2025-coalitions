@@ -1,15 +1,13 @@
 <template>
     <div class="timeline-diagram-wrapper">
         <div style="font-weight: bolder;">Zeitlicher Verlauf der Umfrageergebnisse</div>
-        <canvas v-on:mousemove="onMouseMove" ref="_canvas" style=" background-color: #f6f6f6; border-radius: 4px;"></canvas>
+        <canvas v-on:mousemove="onMouseMove" @touchmove="onMouseMove" ref="_canvas" style=" background-color: #f6f6f6; border-radius: 4px;"></canvas>
     </div>
 </template>
 
 <script>
 import {useAppStateStore} from "@/stores/app-state.ts";
 import {getColor, sonstige, toDate} from "@/services/util.ts";
-
-//import moment from "moment";
 
 export class Vector2D {
     x;
@@ -69,7 +67,7 @@ export class Drawer {
     }
 
     updateRequiredDataForDrawing() {
-        const relativeWidth = Math.min(1280, window.innerWidth * 0.8);
+        const relativeWidth = Math.min(1280, window.innerWidth * 0.95);
         this.canvas.width = relativeWidth;
         this.canvas.height = relativeWidth / 2;
         this.canvas.style.width = this.canvas.width + 'px';
@@ -162,7 +160,7 @@ export class Drawer {
         const step = ((this.canvas.height - (marginTop + marginLeft)) / stepAmount)
         for (let i = 0; i <= stepAmount; i++) {
             const y = (verticalPosition - (step * i));
-            this.drawText((10 * i) + '%', new Vector2D(marginLeft / 2, y + 5));
+            this.drawText((10 * i) + '%', new Vector2D(marginLeft / 4, y + 5), {size: Math.min(12, marginLeft/2.5) +'px'});
             this.drawLine(new Vector2D(marginLeft - 4, y), new Vector2D(marginLeft + 4, y), {color: 'black'})
         }
     }

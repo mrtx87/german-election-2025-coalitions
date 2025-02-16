@@ -3,21 +3,26 @@
         <div class="subheading">Umfragen zur Bundestagswahl 2025 der letzten 14 Tage</div>
         <div class="survey-nav">
             <div class="survey-items">
-                <button class="default-button survey-nav-btn" v-on:click="updatePolls()">refresh</button>
                 <div class="survey-item" v-on:click="selectSurvey(survey.id)" v-for="survey in surveys"
                      v-bind:key="survey.id" :class="{'selected': survey.id === selectedSurveyId }"
-                     :title=" toDate(survey.surveyPeriod.start) + ' - ' + toDate(survey.surveyPeriod.end) + ' | ' + survey.participants + ' Teilnehmer'">
+                     :title=" survey?.institute.name + ' - ' +  toDate(survey.surveyPeriod.start) + ' - ' + toDate(survey.surveyPeriod.end) + ' | ' + survey.participants + ' Teilnehmer'">
                     <div class="institute-name">
-                        {{ survey.institute.name }}
+                        {{ survey?.institute.name }}
                     </div>
-                    <div class="release-date">{{ toDate(survey.release) }}</div>
+                    <div class="release-date">{{ toDate(survey?.release) }}</div>
                 </div>
             </div>
         </div>
         <div class="survey-playground-wrapper">
             <div class="playground">
-                <div style="align-self: flex-start; font-weight: bolder;" v-if="selectedSurveyId">Stimmanteil der
-                    Parteien
+                <div style="display:flex; flex-direction: column;" v-if="selectedSurveyId">
+                    <span style="  font-weight: bolder">Stimmanteil der
+                        Parteien
+                    </span>
+                    <span style="font-size: 13px;">
+                        {{ selectedSurvey?.institute.name }} {{ toDate(selectedSurvey?.release) }}
+                        {{ changed ? '(geändert)' : ''}}
+                    </span>
                 </div>
                 <select-party-value v-bind:partyResult="partyResult"
                                     v-bind:forcedDisabled="Boolean(changesToRender.length)"
@@ -26,14 +31,14 @@
                                     v-for="partyResult in editingSurvey?.results"
                                     :key="partyResult"></select-party-value>
                 <div class="playground-footer-panel" v-if="selectedSurveyId">
-                    <div style="align-self: flex-start">Summe:
+                    <div>Summe:
                         {{ editingSurvey?.results?.reduce((sum, v) => sum + v.result, 0) }}%
                     </div>
                     <button v-on:click="reset" class="default-button">zurücksetzen</button>
                 </div>
             </div>
             <div class="coalition-results">
-                <div style="align-self: flex-start; font-weight: bolder;" v-if="selectedSurveyId">
+                <div style="font-weight: bolder;" v-if="selectedSurveyId">
                     Mögliche Koalitionen basierend auf ihrer Auswahl
                 </div>
                 <div class="coalition-results-content">
@@ -312,9 +317,9 @@ export default {
         coalitions() {
             return this.appStore.coalitions;
         },
-        minimalCoalitions() {
-            const c = this.appStore.coalitions
-            return c ? c.getMinimalCoal() : [];
+        changed() {
+            const selectedSurveyOriginal = this.selectedSurvey;
+            return !this.editingSurvey.results.every(clonedResult => selectedSurveyOriginal.results.find(r => r.party.id === clonedResult.party.id  && r.result === clonedResult.result))
         },
         allCoalitions() {
             const c = this.appStore.coalitions
@@ -368,11 +373,6 @@ export default {
     gap: 10px;
     min-width: 70%;
 
-    .survey-nav-btn {
-      position: absolute;
-      top: -40px;
-    }
-
     .survey-items {
       position: relative;
       display: flex;
@@ -384,7 +384,7 @@ export default {
       .survey-item {
         box-sizing: border-box;
         background-color: #D7D7FE;
-        width: 125px;
+        width: 120px;
         display: flex;
         flex-direction: column;
         gap: 5px;
@@ -404,8 +404,38 @@ export default {
 
         .institute-name {
           font-weight: bold;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
+      }
+    }
+  }
+
+
+  @media screen and (max-width: 850px) {
+
+    .survey-item {
+      font-size: 10px !important;
+      width: 90px !important;
+    }
+
+    .survey-playground-wrapper {
+      flex-direction: column !important;
+      justify-content: center;
+      align-items: center;
+
+      .playground, .coalition-results {
+        width: 95% !important;
+
+      }
+
+      .party-result-panel {
+        justify-content: space-between !important;
+      }
+
+      .coalition-wrapper {
+        width: 47% !important;
       }
     }
   }
@@ -419,9 +449,10 @@ export default {
     .playground {
       display: flex;
       flex-direction: column;
-      width: 48%;
+      align-items: center;
+      min-width: 40%;
       gap: 10px;
-      min-width: 300px;
+      max-width: 600px;
 
 
       .playground-footer-panel {
@@ -429,6 +460,7 @@ export default {
         justify-content: space-between;
         align-self: flex-start;
         width: 100%;
+        align-items: center;
       }
     }
 
@@ -436,9 +468,9 @@ export default {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      align-content: flex-start;
+
       gap: 10px;
-      width: 50%;
+      width: fill;
       min-width: 300px;
 
       .coalition-results-content {
@@ -447,6 +479,7 @@ export default {
         flex-wrap: wrap;
         align-items: flex-start;
         align-content: flex-start;
+        justify-content: space-between;
         gap: 25px 15px;
 
       }
@@ -501,6 +534,7 @@ export default {
 
     }
   }
+
 }
 
 
