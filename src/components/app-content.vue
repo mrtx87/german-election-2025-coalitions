@@ -1,6 +1,10 @@
 <template>
     <div class="app-content">
         <div class="subheading">Umfragen zur Bundestagswahl 2025 der letzten 14 Tage</div>
+        <div :style="{display: this.surveys.length ? 'none' : 'unset' }">
+            <h4>Daten werden geladen...</h4>
+            <div class="lds-dual-ring"></div>
+        </div>
         <div class="survey-nav">
             <div class="survey-items">
                 <div class="survey-item" v-on:click="selectSurvey(survey.id)" v-for="survey in surveys"
@@ -21,7 +25,7 @@
                     </span>
                     <span style="font-size: 13px;">
                         {{ selectedSurvey?.institute.name }} {{ toDate(selectedSurvey?.release) }}
-                        {{ changed ? '(geändert)' : ''}}
+                        {{ changed ? '(geändert)' : '' }}
                     </span>
                 </div>
                 <select-party-value v-bind:partyResult="partyResult"
@@ -319,7 +323,7 @@ export default {
         },
         changed() {
             const selectedSurveyOriginal = this.selectedSurvey;
-            return !this.editingSurvey.results.every(clonedResult => selectedSurveyOriginal.results.find(r => r.party.id === clonedResult.party.id  && r.result === clonedResult.result))
+            return !this.editingSurvey.results.every(clonedResult => selectedSurveyOriginal.results.find(r => r.party.id === clonedResult.party.id && r.result === clonedResult.result))
         },
         allCoalitions() {
             const c = this.appStore.coalitions
@@ -350,8 +354,8 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
   padding: 10px;
 
@@ -535,6 +539,43 @@ export default {
     }
   }
 
+}
+
+.lds-dual-ring {
+  /* change color here */
+  color: #1c4c5b
+}
+
+.lds-dual-ring,
+.lds-dual-ring:after {
+  box-sizing: border-box;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6.4px solid currentColor;
+  border-color: currentColor transparent currentColor transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 
