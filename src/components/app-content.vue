@@ -474,7 +474,7 @@ export default {
       align-items: flex-start;
 
       gap: 10px;
-      width: fill;
+      width: stretch;
       min-width: 300px;
 
       .coalition-results-content {
