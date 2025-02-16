@@ -6,7 +6,8 @@ export const useAppStateStore = defineStore('AppStore', {
             _surveys: [],
             _selectedSurveyId: '',
             _editingSurvey: {},
-            _coalitions: null
+            _coalitions: null,
+            _cookiePolicy: false
         }
     },
     actions: {
@@ -24,6 +25,9 @@ export const useAppStateStore = defineStore('AppStore', {
         },
         setCoalitions(coalitions) {
             this._coalitions = coalitions;
+        },
+        setCookiePolicy(agree) {
+            this._cookiePolicy = agree;
         }
     },
     getters: {
@@ -31,6 +35,7 @@ export const useAppStateStore = defineStore('AppStore', {
         selectedSurveyId: (state) => state._selectedSurveyId,
         selectedSurvey: (state) => state._surveys.find(s => s.id === state._selectedSurveyId),
         editingSurvey: (state) => state._editingSurvey,
-        coalitions: (state) => state._coalitions
+        coalitions: (state) => state._coalitions,
+        cookiePolicy: (state) => state._cookiePolicy,
     }
 });

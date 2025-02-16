@@ -29,7 +29,6 @@
                     </span>
                 </div>
                 <select-party-value v-bind:partyResult="partyResult"
-                                    v-bind:forcedDisabled="Boolean(changesToRender.length)"
                                     v-on:onLockChange="handleLockChange"
                                     v-on:onResultChange="handleResultChange"
                                     v-for="partyResult in editingSurvey?.results"
@@ -146,7 +145,6 @@ export default {
     data: function () {
         return {
             appStore: null,
-            changesToRender: [],
             counts: 0
         }
     },
