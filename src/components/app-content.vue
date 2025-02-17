@@ -195,6 +195,10 @@ export default {
                 if (a.party.shortcut.toLowerCase() === sonstige) {
                     return 1;
                 }
+
+                if (b.party.shortcut.toLowerCase() === sonstige) {
+                    return -1;
+                }
                 return sortByFunc(a, b);
             })
         },
