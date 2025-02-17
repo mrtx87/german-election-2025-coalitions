@@ -282,36 +282,46 @@ export default {
             this.generateCoalitions();
         },
         updateUnlockedResults(changedResult) {
-            const diff = changedResult.result - changedResult.prev.result;
-            if (diff === 0) {
+            const changeDifference = changedResult.result - changedResult.prev.result;
+            if (changeDifference === 0) {
                 return;
             }
-            const unlockedResults = this.appStore.editingSurvey.results
+            const otherUnlockedResults = this.appStore.editingSurvey.results
                 .filter(pr => !pr.locked)
                 .filter(pr => pr !== changedResult.prev);
 
-            for (let i = 0; i < Math.abs(diff); i++) {
-                this.renderOneStepChange(diff, changedResult.prev, unlockedResults);
+            if(otherUnlockedResults.length === 0) {
+                return;
+            }
+
+            let changeAmount = Math.abs(changeDifference);
+            const direction = this.isPositive(changeDifference) ? 1 : -1;
+            while(changeAmount > 0) {
+                const changeStep = changeAmount < 1 ? direction * changeAmount : direction;
+                this.renderOneStepChange(changeStep, changedResult.prev, otherUnlockedResults);
+                changeAmount-=1;
             }
 
             const updatedResults = [...this.appStore.editingSurvey.results.map(r => r !== changedResult ? r : deepCloneObject(changedResult.prev))];
             this.appStore.setEditingSurveyResults(updatedResults);
         },
-        renderOneStepChange(diff, prevResult, unlockedResults) {
-            if (diff > 0) {
-                this.changeResultValue(prevResult, unlockedResults, ur => ur.result > 0, -1);
-            } else if (diff < 0) {
-                this.changeResultValue(prevResult, unlockedResults, ur => ur.result < 50, 1)
-            }
-        },
-        changeResultValue(prev, unlockedResults, cond, changeValue) {
-            const validResults = unlockedResults.filter(cond);
-            if (validResults.length === 0) {
+        renderOneStepChange(changeStep, prev, unlockedResults) {
+            const filterExpr = this.isPositive(changeStep) ? ur => ur.result > 0 : ur => ur.result < 50;
+            const changeableResults = unlockedResults.filter(filterExpr);
+            if (changeableResults.length === 0) {
                 return;
             }
-            const randomIndex = Math.trunc(Math.random() * validResults.length);
-            validResults[randomIndex].result = Number(validResults[randomIndex].result) + changeValue;
-            prev.result += Math.round((-1 * changeValue));
+            prev.result += changeStep;
+            this.changeValueOfRandomResult(changeableResults, -changeStep)
+
+        },
+
+        changeValueOfRandomResult(changeableResults, changeValue) {
+            const randomIndex = Math.trunc(Math.random() * changeableResults.length);
+            changeableResults[randomIndex].result = Number(changeableResults[randomIndex].result) + changeValue;
+        },
+        isPositive(v) {
+            return v > 0;
         }
     },
     computed: {

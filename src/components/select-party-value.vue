@@ -61,7 +61,7 @@ export default {
             this.$emit('onLockChange', {prev: this.partyResult, locked: state})
         },
         updateResultState(event) {
-            this.$emit('onResultChange', {prev: this.partyResult, result: event.target.value});
+            this.$emit('onResultChange', {prev: this.partyResult, result: Number(event.target.value)});
             event.target.value = this.partyResult.result;
         },
         isSonstige(partyResult) {
