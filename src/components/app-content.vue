@@ -168,15 +168,14 @@ export default {
             this.sortSurveys(query.surveys);
             this.appStore.setSurveys(query.surveys);
             if (!this.selectedSurveyId) {
-                this.selectRandomSurvey(query.surveys.map(s => s.id));
+                this.selectLatestSurvey(query.surveys.map(s => s.id));
             }
         },
         reset() {
             this.selectSurvey(this.selectedSurveyId, true);
         },
-        selectRandomSurvey(surveyIds) {
-            const index = Math.floor(Math.random() * surveyIds.length);
-            this.selectSurvey(surveyIds[index], true);
+        selectLatestSurvey(surveyIds) {
+            this.selectSurvey(surveyIds[0], true);
         },
         sortResultsBy(results, sortBy) {
             let sortByFunc = null;
