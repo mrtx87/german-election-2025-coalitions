@@ -298,15 +298,16 @@ export default {
             const direction = this.isPositive(changeDifference) ? 1 : -1;
             while(changeAmount > 0) {
                 const changeStep = changeAmount < 1 ? direction * changeAmount : direction;
-                this.renderOneStepChange(changeStep, changedResult.prev, otherUnlockedResults);
+                const absChangeStep =  Math.abs(changeStep);
+                const filterExpr = this.isPositive(changeStep) ? ur => ur.result >= absChangeStep : ur => ur.result < (50 - absChangeStep);
+                this.executeSingleStepChange(changeStep, changedResult.prev, otherUnlockedResults, filterExpr);
                 changeAmount-=1;
             }
 
             const updatedResults = [...this.appStore.editingSurvey.results.map(r => r !== changedResult ? r : deepCloneObject(changedResult.prev))];
             this.appStore.setEditingSurveyResults(updatedResults);
         },
-        renderOneStepChange(changeStep, prev, unlockedResults) {
-            const filterExpr = this.isPositive(changeStep) ? ur => ur.result > 0 : ur => ur.result < 50;
+        executeSingleStepChange(changeStep, prev, unlockedResults, filterExpr) {
             const changeableResults = unlockedResults.filter(filterExpr);
             if (changeableResults.length === 0) {
                 return;

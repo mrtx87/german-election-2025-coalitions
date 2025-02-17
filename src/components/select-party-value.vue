@@ -15,7 +15,7 @@
         <div class="party-result-panel">
 
             <div class="range">
-                <input type="range" min="0" max="50" step="1"
+                <input type="range" min="0" max="50" step="0.5"
                        :disabled="partyResult.locked || this.forcedDisabled"
                        :class="[partyResult.party.shortcut.toLowerCase().replace(/ /g, '')]"
                        :value="partyResult.result"
