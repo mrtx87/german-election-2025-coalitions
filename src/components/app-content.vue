@@ -29,7 +29,6 @@
                     </span>
                 </div>
                 <select-party-value v-bind:partyResult="partyResult"
-                                    v-bind:forcedDisabled="Boolean(changesToRender.length)"
                                     v-on:onLockChange="handleLockChange"
                                     v-on:onResultChange="handleResultChange"
                                     v-for="partyResult in editingSurvey?.results"
@@ -145,9 +144,7 @@ export default {
     },
     data: function () {
         return {
-            appStore: null,
-            changesToRender: [],
-            counts: 0
+            appStore: null
         }
     },
     methods: {
@@ -296,11 +293,12 @@ export default {
 
             let changeAmount = Math.abs(changeDifference);
             const direction = this.isPositive(changeDifference) ? 1 : -1;
+            const getFilterExpr = this.isPositive(direction) ? function(absChangeStep) { return ur => ur.result >= absChangeStep } : function(absChangeStep) { return ur => ur.result < (50 - absChangeStep) };
+            const regularStep = direction * 0.5;
             while(changeAmount > 0) {
-                const changeStep = changeAmount < 1 ? direction * changeAmount : direction;
-                const absChangeStep =  Math.abs(changeStep);
-                const filterExpr = this.isPositive(changeStep) ? ur => ur.result >= absChangeStep : ur => ur.result < (50 - absChangeStep);
-                this.executeSingleStepChange(changeStep, changedResult.prev, otherUnlockedResults, filterExpr);
+                const appliedStep = changeAmount < 1 ? direction * changeAmount : regularStep;
+                const filterExpr = getFilterExpr(Math.abs(appliedStep));
+                this.executeSingleStepChange(appliedStep, changedResult.prev, otherUnlockedResults, filterExpr);
                 changeAmount-=1;
             }
 

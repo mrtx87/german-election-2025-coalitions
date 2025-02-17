@@ -38,7 +38,7 @@ export default {
     name: "select-party-value",
     components: {},
     emits: ['onLockChange', 'onResultChange'],
-    props: ['partyResult', 'forcedDisabled'],
+    props: ['partyResult'],
     created() {
         this.appStore = useAppStateStore();
     },
