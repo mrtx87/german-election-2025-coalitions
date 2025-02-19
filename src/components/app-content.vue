@@ -287,19 +287,23 @@ export default {
                 .filter(pr => !pr.locked)
                 .filter(pr => pr !== changedResult.prev);
 
-            if(otherUnlockedResults.length === 0) {
+            if (otherUnlockedResults.length === 0) {
                 return;
             }
 
             let changeAmount = Math.abs(changeDifference);
             const direction = this.isPositive(changeDifference) ? 1 : -1;
-            const getFilterExpr = this.isPositive(direction) ? function(absChangeStep) { return ur => ur.result >= absChangeStep } : function(absChangeStep) { return ur => ur.result < (50 - absChangeStep) };
+            const getFilterExpr = this.isPositive(direction) ? function (absChangeStep) {
+                return ur => ur.result >= absChangeStep
+            } : function (absChangeStep) {
+                return ur => ur.result < (50 - absChangeStep)
+            };
             const regularStep = direction * 0.5;
-            while(changeAmount > 0) {
+            while (changeAmount > 0) {
                 const appliedStep = changeAmount < 1 ? direction * changeAmount : regularStep;
                 const filterExpr = getFilterExpr(Math.abs(appliedStep));
                 this.executeSingleStepChange(appliedStep, changedResult.prev, otherUnlockedResults, filterExpr);
-                changeAmount-=1;
+                changeAmount -= 1;
             }
 
             const updatedResults = [...this.appStore.editingSurvey.results.map(r => r !== changedResult ? r : deepCloneObject(changedResult.prev))];
@@ -483,7 +487,7 @@ export default {
     .coalition-results {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
 
       gap: 10px;
       width: stretch;
