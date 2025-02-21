@@ -488,7 +488,6 @@ export default {
       display: flex;
       flex-direction: column;
       align-items: center;
-
       gap: 10px;
       width: stretch;
       min-width: 300px;
@@ -501,7 +500,6 @@ export default {
         align-content: flex-start;
         justify-content: space-between;
         gap: 25px 15px;
-
       }
     }
   }

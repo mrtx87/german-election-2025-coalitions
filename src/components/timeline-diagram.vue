@@ -1,7 +1,8 @@
 <template>
     <div class="timeline-diagram-wrapper">
         <div style="font-weight: bolder;">Zeitlicher Verlauf der Umfrageergebnisse</div>
-        <canvas v-on:mousemove="onMouseMove" @touchmove="onMouseMove" ref="_canvas" style=" background-color: #f6f6f6; border-radius: 4px;"></canvas>
+        <canvas v-on:mousemove="onMouseMove" @touchmove="onMouseMove" ref="_canvas"
+                style=" background-color: #f6f6f6; border-radius: 4px;"></canvas>
     </div>
 </template>
 
@@ -160,7 +161,7 @@ export class Drawer {
         const step = ((this.canvas.height - (marginTop + marginLeft)) / stepAmount)
         for (let i = 0; i <= stepAmount; i++) {
             const y = (verticalPosition - (step * i));
-            this.drawText((10 * i) + '%', new Vector2D(marginLeft / 4, y + 5), {size: Math.min(12, marginLeft/2.5) +'px'});
+            this.drawText((10 * i) + '%', new Vector2D(marginLeft / 4, y + 5), {size: Math.min(12, marginLeft / 2.5) + 'px'});
             this.drawLine(new Vector2D(marginLeft - 4, y), new Vector2D(marginLeft + 4, y), {color: 'black'})
         }
     }
@@ -247,28 +248,26 @@ export class Drawer {
     }
 
     drawGraphs() {
-        const graphs = [...this.partyGraphsMap.values()];
-        if (this.highlightGraphId) {
-            graphs.sort((g1, g2) => {
-                if (g1.partyId === this.highlightGraphId) {
-                    return 1;
-                }
-                if (g2.partyId === this.highlightGraphId) {
-                    return -1;
-                }
-                return 0;
-            });
-            console.log(graphs.map(g => g.partyId))
+        for (let graph of this.partyGraphsMap.values()) {
+            if (this.highlightGraphId !== graph.partyId) {
+                this.drawGraph(graph.vectors, {
+                    color: graph.color || 'grey',
+                    width: 1,
+                    radius: 2,
+                    highlight: false
+                });
+            }
         }
-        for (let graph of graphs) {
-            const highlightGraph = this.highlightGraphId === graph.partyId;
-            this.drawGraph(graph.vectors, {
-                color: graph.color || 'grey',
-                width: highlightGraph ? 3 : 1,
-                radius: highlightGraph ? 5 : 3,
-                highlight: highlightGraph
+        const highlightGraph = this.partyGraphsMap.get(this.highlightGraphId);
+        if (highlightGraph) {
+            this.drawGraph(highlightGraph.vectors, {
+                color: highlightGraph.color || 'grey',
+                width: 2,
+                radius: 3,
+                highlight: true
             });
         }
+
     }
 
     drawGraph(vectors, options) {
