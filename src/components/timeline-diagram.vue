@@ -109,8 +109,8 @@ export class Drawer {
                     partyVectorsMap.set(partyId, partyGraphEntry);
                 }
 
-                const resultByDate = partyGraphEntry.vectors.find( v => v.release === surveyReleaseDate)
-                if(resultByDate) {
+                const resultByDate = partyGraphEntry.vectors.find(v => v.release === surveyReleaseDate)
+                if (resultByDate) {
                     resultByDate.results.push(r.result);
                     return;
                 }
@@ -125,7 +125,7 @@ export class Drawer {
         const availableHeight = this.canvas.height - (this.marginTop + this.x);
         for (let partyGraph of partyVectorsMap.values()) {
             partyGraph.vectors.forEach(vectorsOfDate => {
-                vectorsOfDate.avgResult = vectorsOfDate.results.reduce((sum, res) => sum + res, 0)/vectorsOfDate.results.length;
+                vectorsOfDate.avgResult = vectorsOfDate.results.reduce((sum, res) => sum + res, 0) / vectorsOfDate.results.length;
                 const dateX = this.surveyDates.get(vectorsOfDate.release);
                 if (dateX) {
                     vectorsOfDate.x = dateX;
@@ -189,14 +189,16 @@ export class Drawer {
     }
 
     collectXAxisDatesAndPixelPositions(horizontalPosition, verticalPosition, marginRight) {
-        const step = ((this.canvas.width - (horizontalPosition + marginRight)) / this.surveys.length)
+        const dates = this.surveys.reduce((dates, s) => dates.add(toDate(s.release)), new Set());
+        const step = ((this.canvas.width - (horizontalPosition + marginRight)) / dates.size)
         let factor = 0;
-        this.surveyDates = this.surveys
-            .map(s => toDate(s.release))
+        this.surveyDates = [...dates]
             .reduce((map, date) => {
-                const x = (horizontalPosition + (step * factor));
-                map.set(date, x);
-                factor += 1;
+                if (!map.has(date)) {
+                    const x = (horizontalPosition + (step * factor));
+                    map.set(date, x);
+                    factor += 1;
+                }
                 return map;
             }, new Map());
     }
