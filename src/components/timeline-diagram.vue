@@ -63,7 +63,8 @@ export class Drawer {
 
     constructor(canvas, surveys) {
         this.canvas = canvas;
-        this.surveys = surveys;
+        this.surveys = [...surveys];
+        this.surveys.sort((d1, d2) => d1.release.getTime() - d2.release.getTime());
         this.updateRequiredDataForDrawing();
     }
 
@@ -96,6 +97,7 @@ export class Drawer {
     collectResultsSortedByDate(surveys) {
         const partyVectorsMap = new Map();
         surveys.forEach(survey => {
+            const surveyReleaseDate = toDate(survey.release);
             survey.results.forEach(r => {
                 if (r.party.shortcut.toLowerCase() === sonstige) {
                     return;
@@ -106,25 +108,38 @@ export class Drawer {
                     partyGraphEntry = {partyId, vectors: [], color: getColor(partyId)};
                     partyVectorsMap.set(partyId, partyGraphEntry);
                 }
-                partyGraphEntry.vectors.push({result: r.result, release: toDate(survey.release)});
+
+                const resultByDate = partyGraphEntry.vectors.find( v => v.release === surveyReleaseDate)
+                if(resultByDate) {
+                    resultByDate.results.push(r.result);
+                    return;
+                }
+
+                partyGraphEntry.vectors.push({results: [r.result], release: surveyReleaseDate});
             })
         });
         return partyVectorsMap;
     }
 
     generateVectorsForDrawing(partyVectorsMap) {
-        for (let pv of partyVectorsMap.values()) {
-            const availableHeight = this.canvas.height - (this.marginTop + this.x);
-            pv.vectors.forEach(v => {
-                const dateX = this.surveyDates.get(v.release);
+        const availableHeight = this.canvas.height - (this.marginTop + this.x);
+        for (let partyGraph of partyVectorsMap.values()) {
+            partyGraph.vectors.forEach(vectorsOfDate => {
+                vectorsOfDate.avgResult = vectorsOfDate.results.reduce((sum, res) => sum + res, 0)/vectorsOfDate.results.length;
+                const dateX = this.surveyDates.get(vectorsOfDate.release);
                 if (dateX) {
-                    v.x = dateX;
-                    v.y = (this.canvas.height - this.x) - (availableHeight * (2 * (v.result / 100)));
+                    vectorsOfDate.x = dateX;
+                    //vectorsOfDate.avgY = (this.canvas.height - this.x) - (availableHeight * (2 * (vectorsOfDate.avgResult / 100)));
+                    vectorsOfDate.avgY = this.convertSurveyResultToPixel(availableHeight, vectorsOfDate.avgResult);
+                    vectorsOfDate.yList = vectorsOfDate.results.map(r => this.convertSurveyResultToPixel(availableHeight, r));
                 }
             });
         }
     }
 
+    convertSurveyResultToPixel(availableHeight, result) {
+        return (this.canvas.height - this.x) - (availableHeight * (2 * (result / 100)));
+    }
 
     renderDiagram() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -174,10 +189,8 @@ export class Drawer {
     }
 
     collectXAxisDatesAndPixelPositions(horizontalPosition, verticalPosition, marginRight) {
-
         const step = ((this.canvas.width - (horizontalPosition + marginRight)) / this.surveys.length)
         let factor = 0;
-        this.surveys.sort((d1, d2) => d1.release.getTime() - d2.release.getTime())
         this.surveyDates = this.surveys
             .map(s => toDate(s.release))
             .reduce((map, date) => {
@@ -198,22 +211,19 @@ export class Drawer {
             for (let i = 0; i < graph.vectors.length - 1; i++) {
                 const left = graph.vectors[i];
                 const right = graph.vectors[i + 1];
-                const gradient = (right.y - left.y) / (right.x - left.x);
+                const gradient = (right.avgY - left.avgY) / (right.x - left.x);
                 if (mousePosition.x < left.x || mousePosition.x > right.x) {
                     continue;
                 }
                 if (gradient !== 0) {
-                    const projectedY = (gradient * mousePosition.x) + (left.y - (gradient * left.x));
+                    const projectedY = (gradient * mousePosition.x) + (left.avgY - (gradient * left.x));
                     if (Math.abs(projectedY - mousePosition.y) < 3) { //Math.round(projectedY) === Math.round(mousePosition.y)
-                        console.log('hit on line calculation: ' + graph.partyId + i);
                         this.highlightGraphId = graph.partyId;
                         abortOnDetectionSuccess = true;
                         break;
                     }
                 } else {
-                    //console.log(graph.partyId + i + ' gradientZero', Math.floor(left.y), mousePosition.y, Math.ceil(left.y))
-                    if (left.y - 2 <= mousePosition.y && mousePosition.y <= left.y + 2) {
-                        console.log('hit on horizontal Axis:' + graph.partyId + i)
+                    if (left.avgY - 2 <= mousePosition.y && mousePosition.y <= left.avgY + 2) {
                         this.highlightGraphId = graph.partyId;
                         abortOnDetectionSuccess = true;
                         break;
@@ -275,11 +285,14 @@ export class Drawer {
             const from = vectors[i];
             if (i < vectors.length - 1) {
                 const to = vectors[i + 1];
-                this.drawLine(from, to, options)
+                this.drawLine(new Vector2D(from.x, from.avgY), new Vector2D(to.x, to.avgY), options)
             }
-            this.drawDot(from, options);
+
+            from.yList.forEach(y => {
+                this.drawDot(new Vector2D(from.x, y), options);
+            });
             if (options.highlight) {
-                this.drawText(from.result + '%', Vector2D.of(from).addY(this.canvas.width * -0.01), {size: this.canvas.width * 0.01 + 'px'})
+                this.drawText(from.avgResult.toFixed(1) + '%', new Vector2D(from.x, from.avgY).addY(this.canvas.width * -0.01), {size: this.canvas.width * 0.01 + 'px'})
             }
         }
     }
@@ -330,7 +343,7 @@ export default {
     },
     mounted() {
         this.canvas = this.$refs._canvas;
-        this.drawer = new Drawer(this.canvas, this.filterSurveys(this.surveys));
+        this.drawer = new Drawer(this.canvas, this.surveys);
     },
     data: function () {
         return {
